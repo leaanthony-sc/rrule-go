@@ -439,7 +439,7 @@ func TestStrSetParseErrors(t *testing.T) {
 	}
 }
 
-func TestLocalTime(t *testing.T) {
+func TestRRULEStringKeepsLocalTime(t *testing.T) {
 	localTimeRRULE := "DTSTART;TZID=Australia/Sydney:19980101T090000\nRRULE:FREQ=WEEKLY;UNTIL=20201230T220000"
 	r, err := StrToRRule(localTimeRRULE)
 	if err != nil {
@@ -451,7 +451,7 @@ func TestLocalTime(t *testing.T) {
 	}
 }
 
-func TestLocalTime2(t *testing.T) {
+func TestLocalTimeIsParsedCorrectly(t *testing.T) {
 	sydney, _ := time.LoadLocation("Australia/Sydney")
 	localTimeRRULE := "DTSTART;TZID=Australia/Sydney:19980101T090000\nRRULE:FREQ=WEEKLY;UNTIL=20201230T220000"
 	r, err := StrToRRule(localTimeRRULE)
@@ -464,7 +464,7 @@ func TestLocalTime2(t *testing.T) {
 	}
 }
 
-func TestDateTimeMismatchErrors1(t *testing.T) {
+func Test_DTStartInUTC_UNTILInLocalTime(t *testing.T) {
 	mismatchedTimeFormats := "DTSTART;19980101T090000Z\nRRULE:FREQ=WEEKLY;UNTIL=20201230T220000"
 	_, err := StrToRRule(mismatchedTimeFormats)
 	if err == nil {
@@ -472,14 +472,14 @@ func TestDateTimeMismatchErrors1(t *testing.T) {
 	}
 }
 
-func TestDateTimeMismatchErrors2(t *testing.T) {
+func Test_DTStartInLocalTime_UNTILInUTC(t *testing.T) {
 	mismatchedTimeFormats := "DTSTART;19980101T090000\nRRULE:FREQ=WEEKLY;UNTIL=20201230T220000Z"
 	_, err := StrToRRule(mismatchedTimeFormats)
 	if err == nil {
 		t.Errorf("Expected error due to mismatched time formats")
 	}
 }
-func TestDateTimeMismatchErrors3(t *testing.T) {
+func Test_TZGiven_DTStartInUTC(t *testing.T) {
 	mismatchedTimeFormats := "DTSTART;TZID=Australia/Sydney:19980101T090000Z\nRRULE:FREQ=WEEKLY;UNTIL=20201230T220000Z"
 	_, err := StrToRRule(mismatchedTimeFormats)
 	if err == nil {
